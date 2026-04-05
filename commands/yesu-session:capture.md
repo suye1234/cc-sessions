@@ -22,7 +22,13 @@ Review the current conversation and fill in these sections (skip empty ones):
 8. **decisions**: Architecture/design decisions made and why
 9. **blockers**: Open questions or unresolved issues
 10. **nextStep**: The single next action to take when resuming
-11. **keyLearnings**: Notable insights from this session
+11. **keyLearnings**: Notable insights, organized by category. Use `Record<string, string[]>` format:
+    ```json
+    {
+      "分类名称": ["insight 1", "insight 2"],
+      "另一个分类": ["insight 3"]
+    }
+    ```
 
 ### Step 2: Create the session via CLI
 

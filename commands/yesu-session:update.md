@@ -39,7 +39,7 @@ Compare the existing session's sections with the current conversation. Identify:
 - **New decisions** — new architecture/design choices
 - **Updated blockers** — resolved ones removed, new ones added
 - **Updated nextStep** — what to do next based on current state
-- **Updated keyLearnings** — new insights
+- **Updated keyLearnings** — new insights, categorized as `Record<string, string[]>`. Append to existing categories or add new ones.
 - **Title/summary/tags** — update if scope changed significantly
 
 Do NOT replace existing items — **append** new ones to lists.

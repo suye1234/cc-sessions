@@ -7,7 +7,7 @@ export interface SessionSections {
   decisions?: string[];
   blockers?: string[];
   nextStep?: string;
-  keyLearnings?: string;
+  keyLearnings?: string | Record<string, string[]>;
 }
 
 export interface FileState {

@@ -532,6 +532,15 @@ async function showDetail(id) {
 
   const sectionHtml = (t, content) => content ? `<div class="section-block"><h3>${t}</h3><div class="section-content">${content}</div></div>` : '';
   const listHtml = (t, items) => items?.length ? sectionHtml(t, '<ul>' + items.map(i => `<li>${esc(i)}</li>`).join('') + '</ul>') : '';
+  const renderKeyLearnings = (kl) => {
+    if (!kl) return '';
+    if (typeof kl === 'string') return sectionHtml('Key Learnings', esc(kl));
+    // Record<string, string[]> — render as categorized list
+    const cats = Object.entries(kl).map(([cat, items]) =>
+      `<div class="kl-category"><h4>${esc(cat)}</h4><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>`
+    ).join('');
+    return sectionHtml('Key Learnings', cats);
+  };
 
   let fileHtml = '';
   if (sec.fileStates?.length) {
@@ -563,7 +572,7 @@ async function showDetail(id) {
       ${listHtml('Decisions', sec.decisions)}
       ${listHtml('Blockers', sec.blockers)}
       ${sectionHtml('Next Step', sec.nextStep ? esc(sec.nextStep) : '')}
-      ${sectionHtml('Key Learnings', sec.keyLearnings ? esc(sec.keyLearnings) : '')}
+      ${renderKeyLearnings(sec.keyLearnings)}
     </div>
   `;
   c.scrollIntoView({ behavior: 'smooth' });
