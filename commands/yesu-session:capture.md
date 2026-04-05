@@ -80,6 +80,6 @@ Think like `/save-session` — capture the **what, why, outcomes, and next steps
 
 ## Notes
 
-- This saves to `sessions/data/` (JSON), viewed via dashboard at localhost:3456
+- This saves to `sessions/data/` (JSON), viewed via dashboard at localhost:8283
 - Use Chinese in title and summary when the conversation was in Chinese
 - Tags should be lowercase for consistency

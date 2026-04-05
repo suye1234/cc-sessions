@@ -37,7 +37,7 @@ npx tsx src/cli.ts import [path]           # default: ~/.claude/session-data/
 npx tsx src/cli.ts delete <id>
 
 # Start web dashboard
-npm run dashboard                          # http://localhost:3456
+npm run dashboard                          # http://localhost:8283
 ```
 
 ## Architecture
@@ -63,4 +63,4 @@ public/
 ## Environment Variables
 
 - `SESSIONS_DATA_DIR` — override the data directory (default: `./data`)
-- `PORT` — dashboard server port (default: `3456`)
+- `PORT` — dashboard server port (default: `8283`)

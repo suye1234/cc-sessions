@@ -26,7 +26,7 @@ npx tsx src/cli.ts import
 
 # Start the web dashboard
 npm run dashboard
-# Open http://localhost:3456
+# Open http://localhost:8283
 ```
 
 ## CLI Usage
@@ -91,7 +91,7 @@ Sessions use **structured sections** rather than raw conversation messages:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `SESSIONS_DATA_DIR` | `./data` | Data directory path |
-| `PORT` | `3456` | Dashboard server port |
+| `PORT` | `8283` | Dashboard server port |
 
 ## Claude Code Commands
 

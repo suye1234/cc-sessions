@@ -26,7 +26,7 @@ npx tsx src/cli.ts import
 
 # 启动 Web Dashboard
 npm run dashboard
-# 打开 http://localhost:3456
+# 打开 http://localhost:8283
 ```
 
 ## CLI 使用
@@ -91,7 +91,7 @@ Session 以**结构化 sections** 为核心，而非原始对话消息：
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
 | `SESSIONS_DATA_DIR` | `./data` | 数据目录路径 |
-| `PORT` | `3456` | Dashboard 服务端口 |
+| `PORT` | `8283` | Dashboard 服务端口 |
 
 ## Claude Code 命令
 

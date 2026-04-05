@@ -5,7 +5,7 @@ import { Store } from './store.js';
 import { SessionManager } from './session.js';
 import { SearchEngine } from './search.js';
 
-const PORT = parseInt(process.env['PORT'] ?? '3456', 10);
+const PORT = parseInt(process.env['PORT'] ?? '8283', 10);
 const DATA_DIR = process.env['SESSIONS_DATA_DIR'] ?? join(resolve('.'), 'data');
 const PUBLIC_DIR = join(resolve('.'), 'public');
 
