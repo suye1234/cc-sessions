@@ -276,6 +276,20 @@ header .count-badge {
 
 .close-btn:hover { background: var(--red); color: #fff; }
 
+.delete-btn {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  background: var(--bg);
+  border: 2px solid var(--red);
+  color: var(--red);
+  cursor: pointer;
+  margin-right: 8px;
+}
+.delete-btn:hover { background: var(--red); color: #fff; }
+
 .detail-meta {
   display: flex;
   gap: 20px;
@@ -602,6 +616,7 @@ async function showDetail(id) {
     <div class="detail-panel">
       <div class="detail-header">
         <h2>${esc(s.title)}</h2>
+        <button class="delete-btn" onclick="deleteSession('${s.id}')">DELETE</button>
         <button class="close-btn" onclick="closeDetail()">CLOSE</button>
       </div>
       <div class="detail-meta">
@@ -626,6 +641,13 @@ async function showDetail(id) {
 
 function closeDetail() {
   document.querySelectorAll('.detail-container').forEach(el => el.remove());
+}
+
+async function deleteSession(id) {
+  if (!confirm('确定要删除这个 session 吗？此操作不可撤销。')) return;
+  await fetch(`${API}/api/sessions/${id}`, { method: 'DELETE' });
+  closeDetail();
+  loadSessions();
 }
 
 async function doSearch() {

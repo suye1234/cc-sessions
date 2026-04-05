@@ -82,6 +82,23 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    if (sessionMatch && req.method === 'DELETE') {
+      const id = sessionMatch[1];
+      const sessions = await manager.list();
+      const match = sessions.find(s => s.id.startsWith(id));
+      if (!match) { json(res, { error: 'Not found' }, 404); return; }
+      await manager.delete(match.id);
+      json(res, { deleted: match.id });
+      return;
+    }
+
+    // CORS preflight for DELETE
+    if (sessionMatch && req.method === 'OPTIONS') {
+      res.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
+      res.end();
+      return;
+    }
+
     // Static files
     if (path === '/' || path === '/index.html') {
       await serveStatic(res, join(PUBLIC_DIR, 'index.html'));
