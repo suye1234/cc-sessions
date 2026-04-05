@@ -608,7 +608,7 @@ async function showDetail(id) {
       ${renderKeyLearnings(sec.keyLearnings)}
     </div>
   `;
-  c.scrollIntoView({ behavior: 'smooth' });
+  c.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function closeDetail() {
