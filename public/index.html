@@ -554,11 +554,18 @@ function updateTagFilter() {
 }
 
 async function showDetail(id) {
-  // Remove any existing detail panel
-  closeDetail();
-
   const card = document.querySelector(`.session-card[data-id="${id}"]`);
   if (!card) return;
+
+  // Toggle: if this card's detail is already open, close it
+  const existing = card.nextElementSibling;
+  if (existing && existing.classList.contains('detail-container')) {
+    existing.remove();
+    return;
+  }
+
+  // Remove any other open detail panel
+  closeDetail();
 
   // Create detail container after the clicked card
   const c = document.createElement('div');
