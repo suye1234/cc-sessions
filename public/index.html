@@ -326,18 +326,51 @@ header .count-badge {
 .section-content ul {
   list-style: none;
   padding: 0;
+  counter-reset: item;
 }
 
 .section-content li {
-  padding: 8px 14px;
+  padding: 10px 14px 10px 48px;
   margin-bottom: 6px;
   border-left: 5px solid var(--accent);
   background: #faf8f2;
   font-size: 13px;
   line-height: 1.6;
+  position: relative;
+  counter-increment: item;
+}
+
+.section-content li::before {
+  content: counter(item, decimal-leading-zero);
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-muted);
 }
 
 .section-content li:nth-child(even) { border-left-color: var(--accent-2); }
+
+/* Key learnings categories */
+.kl-category {
+  margin-bottom: 16px;
+}
+.kl-category h4 {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  background: var(--accent-3);
+  color: #fff;
+  display: inline-block;
+}
+.kl-category ul {
+  counter-reset: item;
+}
 
 /* File table */
 .file-table {
