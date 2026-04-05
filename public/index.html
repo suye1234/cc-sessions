@@ -476,7 +476,6 @@ mark {
         <option value="">ALL TAGS</option>
       </select>
     </div>
-    <div id="detail-container"></div>
     <div id="session-list" class="session-list"></div>
   </div>
 
@@ -535,7 +534,7 @@ function renderSessions(sessions) {
   }
 
   el.innerHTML = sessions.map(s => `
-    <div class="session-card" onclick="showDetail('${s.id}')">
+    <div class="session-card" data-id="${s.id}" onclick="showDetail('${s.id}')">
       <div class="card-top">
         <div class="title">${esc(s.title)}</div>
         <div class="date">${s.createdAt.slice(0, 10)}</div>
@@ -555,8 +554,17 @@ function updateTagFilter() {
 }
 
 async function showDetail(id) {
-  const c = document.getElementById('detail-container');
+  // Remove any existing detail panel
+  closeDetail();
+
+  const card = document.querySelector(`.session-card[data-id="${id}"]`);
+  if (!card) return;
+
+  // Create detail container after the clicked card
+  const c = document.createElement('div');
+  c.className = 'detail-container';
   c.innerHTML = '<div class="loading">LOADING...</div>';
+  card.after(c);
 
   const res = await fetch(`${API}/api/sessions/${id}`);
   const data = await res.json();
@@ -568,7 +576,6 @@ async function showDetail(id) {
   const renderKeyLearnings = (kl) => {
     if (!kl) return '';
     if (typeof kl === 'string') return sectionHtml('Key Learnings', esc(kl));
-    // Record<string, string[]> — render as categorized list
     const cats = Object.entries(kl).map(([cat, items]) =>
       `<div class="kl-category"><h4>${esc(cat)}</h4><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>`
     ).join('');
@@ -608,11 +615,10 @@ async function showDetail(id) {
       ${renderKeyLearnings(sec.keyLearnings)}
     </div>
   `;
-  c.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function closeDetail() {
-  document.getElementById('detail-container').innerHTML = '';
+  document.querySelectorAll('.detail-container').forEach(el => el.remove());
 }
 
 async function doSearch() {
