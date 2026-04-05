@@ -1,5 +1,6 @@
-import { readFile, writeFile, mkdir, unlink, readdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, unlink, readdir, rename } from 'node:fs/promises';
 import { join } from 'node:path';
+import { randomBytes } from 'node:crypto';
 import type { Session, SessionIndex, SessionSummary } from './types.js';
 
 export class Store {
@@ -28,7 +29,7 @@ export class Store {
   }
 
   async writeIndex(index: SessionIndex): Promise<void> {
-    await writeFile(this.indexPath, JSON.stringify(index, null, 2), 'utf-8');
+    await this.atomicWrite(this.indexPath, JSON.stringify(index, null, 2));
   }
 
   async readSession(id: string): Promise<Session | null> {
@@ -41,7 +42,7 @@ export class Store {
   }
 
   async writeSession(session: Session): Promise<void> {
-    await writeFile(this.sessionPath(session.id), JSON.stringify(session, null, 2), 'utf-8');
+    await this.atomicWrite(this.sessionPath(session.id), JSON.stringify(session, null, 2));
   }
 
   async deleteSessionFile(id: string): Promise<void> {
@@ -74,6 +75,12 @@ export class Store {
       summary: session.summary,
       hasSections: Object.keys(session.sections).length > 0,
     };
+  }
+
+  private async atomicWrite(targetPath: string, data: string): Promise<void> {
+    const tmpPath = `${targetPath}.${randomBytes(6).toString('hex')}.tmp`;
+    await writeFile(tmpPath, data, 'utf-8');
+    await rename(tmpPath, targetPath);
   }
 
   private sessionPath(id: string): string {

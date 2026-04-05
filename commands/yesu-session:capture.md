@@ -24,48 +24,37 @@ Review the current conversation and fill in these sections (skip empty ones):
 10. **nextStep**: The single next action to take when resuming
 11. **keyLearnings**: Notable insights from this session
 
-### Step 2: Create the session via temporary script
+### Step 2: Create the session via CLI
 
-Write a temporary file `_capture.ts` then execute it (tsx -e has ESM resolution issues):
+Build a JSON object with the extracted sections, then call CLI `create` directly:
 
 ```bash
 cd /Users/suye/AI/claudecode/sessions
+
+npx tsx src/cli.ts create \
+  --title "<TITLE>" \
+  --topic "<TOPIC>" \
+  --project "<PROJECT>" \
+  --tags "<tag1>,<tag2>" \
+  --summary "<WHAT_WE_ARE_BUILDING first 300 chars>" \
+  --sections '<SECTIONS_JSON>'
 ```
 
-Write `_capture.ts` with this content (fill in the extracted values):
+The `--sections` value is a JSON string containing all sections:
 
-```typescript
-import { Store } from './src/store.js';
-import { SessionManager } from './src/session.js';
-
-const store = new Store('./data');
-const manager = new SessionManager(store);
-await manager.init();
-
-const session = await manager.create({
-  title: '<TITLE>',
-  topic: '<TOPIC>',
-  project: '<PROJECT>',
-  tags: ['<tag1>', '<tag2>'],
-  summary: '<WHAT_WE_ARE_BUILDING first 300 chars>',
-  sections: {
-    whatWeAreBuilding: '<full description>',
-    whatWorked: ['<item1>', '<item2>'],
-    whatDidNotWork: ['<item1>'],
-    decisions: ['<decision1>'],
-    blockers: ['<blocker1>'],
-    nextStep: '<next step>',
-    keyLearnings: '<learnings>',
-  },
-});
-console.log('Session saved: ' + session.id);
+```json
+{
+  "whatWeAreBuilding": "<full description>",
+  "whatWorked": ["<item1>", "<item2>"],
+  "whatDidNotWork": ["<item1>"],
+  "decisions": ["<decision1>"],
+  "blockers": ["<blocker1>"],
+  "nextStep": "<next step>",
+  "keyLearnings": "<learnings>"
+}
 ```
 
-Then run:
-
-```bash
-npx tsx _capture.ts
-```
+**Tip:** If the JSON is too long for a single command line, write the sections JSON to a temp file and use `$(cat _sections.json)` — but prefer inline for simplicity.
 
 ### Step 3: Confirm with user
 

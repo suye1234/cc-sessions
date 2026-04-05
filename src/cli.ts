@@ -362,12 +362,22 @@ async function main(): Promise<void> {
     if (!title) { console.error('Usage: sessions create --title "Title" [--project P] [--tags a,b] [--summary S]'); return; }
 
     const { manager } = await createManager();
-    const session = await manager.create({
+    const opts: Record<string, unknown> = {
       title,
       project: flags['project'],
       tags: flags['tags']?.split(',').map(t => t.trim()).filter(Boolean),
       summary: flags['summary'],
-    });
+      topic: flags['topic'],
+    };
+    if (flags['sections']) {
+      try {
+        opts.sections = JSON.parse(flags['sections']);
+      } catch {
+        console.error('Invalid JSON for --sections');
+        return;
+      }
+    }
+    const session = await manager.create(opts as Parameters<typeof manager.create>[0]);
     console.log(JSON.stringify({ id: session.id, title: session.title }, null, 2));
     return;
   }

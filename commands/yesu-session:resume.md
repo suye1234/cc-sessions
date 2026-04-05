@@ -15,7 +15,9 @@ Supports loading **1–5 sessions** at once. Multiple sessions are useful when r
 $ARGUMENTS can be:
 - Empty — show list and ask user to pick
 - One ID prefix or keyword — load that single session
-- Multiple IDs separated by spaces (e.g., `5f76a811 6be87b42`) — load all of them
+- Multiple IDs separated by **commas** (e.g., `5f76a811,6be87b42`) — load all of them
+
+Spaces are **not** used as separators — they are part of the search keyword (e.g., `Claude Code` is one keyword, not two).
 
 If more than 5 IDs are provided, reject with: "最多支持同时加载 5 个 session，请减少数量。"
 
@@ -29,7 +31,12 @@ If no argument:
 
 ### Step 2: Load sessions
 
-For each session, read the JSON directly from `data/sessions/<id>.json` for full sections access.
+For each session:
+1. First resolve the short ID to the full UUID by listing files in `data/sessions/` that start with the short ID prefix
+2. Run: `cd /Users/suye/AI/claudecode/sessions && npx tsx src/cli.ts show <short_id>` to get the session details — the CLI handles partial ID matching internally
+3. Then read the full JSON from `data/sessions/<full_uuid>.json` for complete sections access
+
+**Important:** Never assume the short ID is the full filename. Always resolve via CLI or glob match first.
 
 ### Step 3: Present structured briefing
 
@@ -104,7 +111,8 @@ After all sessions are displayed, show:
 
 Do NOT start working automatically. Wait for the user to say what to do next.
 
-If the next step is clearly defined and the user says "continue" — proceed with that exact step.
+- **Single session:** If the next step is clearly defined and the user says "continue" — proceed with that exact step.
+- **Multiple sessions:** Do NOT auto-continue. Ask the user which session's next step to work on, or what cross-session task they want to do.
 
 ## Notes
 
