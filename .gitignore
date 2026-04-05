@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.claude/
+data/sessions/
+data/index.json
+_capture.ts
+_update.ts
+*.tmp
