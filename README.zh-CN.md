@@ -93,6 +93,24 @@ Session 以**结构化 sections** 为核心，而非原始对话消息：
 | `SESSIONS_DATA_DIR` | `./data` | 数据目录路径 |
 | `PORT` | `3456` | Dashboard 服务端口 |
 
+## Claude Code 命令
+
+项目包含自定义的 `/yesu-session:*` 命令，用于 Claude Code：
+
+| 命令 | 说明 |
+|------|------|
+| `/yesu-session:capture` | 将当前对话保存为结构化会话 |
+| `/yesu-session:update` | 向已有会话追加新进展 |
+| `/yesu-session:resume` | 加载会话并恢复上下文 |
+| `/yesu-session:list` | 列出所有会话 |
+| `/yesu-session:search` | 跨会话全文搜索 |
+
+安装命令（软链接到 `~/.claude/commands/`）：
+
+```bash
+./install.sh
+```
+
 ## 开发
 
 ```bash

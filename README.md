@@ -93,6 +93,24 @@ Sessions use **structured sections** rather than raw conversation messages:
 | `SESSIONS_DATA_DIR` | `./data` | Data directory path |
 | `PORT` | `3456` | Dashboard server port |
 
+## Claude Code Commands
+
+This project includes custom `/yesu-session:*` commands for Claude Code:
+
+| Command | Description |
+|---------|-------------|
+| `/yesu-session:capture` | Save current conversation as a structured session |
+| `/yesu-session:update` | Append new progress to an existing session |
+| `/yesu-session:resume` | Load a session and restore context |
+| `/yesu-session:list` | List all sessions |
+| `/yesu-session:search` | Full-text search across sessions |
+
+Install commands (symlinks to `~/.claude/commands/`):
+
+```bash
+./install.sh
+```
+
 ## Development
 
 ```bash
