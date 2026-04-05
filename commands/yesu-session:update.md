@@ -12,9 +12,15 @@ Update an existing session in `/Users/suye/AI/claudecode/sessions/data/` with ne
 
 If $ARGUMENTS is provided, treat it as a session ID prefix.
 
-If not provided:
-- Run `cd /Users/suye/AI/claudecode/sessions && npx tsx src/cli.ts list` to show available sessions
-- Ask the user which session to update
+If not provided, try to **auto-match the current conversation**:
+1. Look at the current conversation context — identify the project path, title, or topic being discussed
+2. Run: `cd /Users/suye/AI/claudecode/sessions && npx tsx src/cli.ts list`
+3. Match against session titles, projects, and tags to find the most likely candidate
+4. If a single session clearly matches (same project path or very similar title), use it and inform the user:
+   ```
+   Auto-matched session: <id (first 8 chars)> — <title>
+   ```
+5. If no clear match or multiple candidates, show the list and ask the user which session to update
 
 ### Step 2: Load the current session
 
