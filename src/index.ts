@@ -17,4 +17,9 @@ export type {
   DigestLesson,
   DigestArchitectureEntry,
   DigestLearning,
+  DigestDiff,
+  ValidationWarning,
+  validateSession,
+  computeDigestDiff,
 } from './types.js';
+export type { DigestUpdateResult } from './digest.js';

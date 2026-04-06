@@ -6,6 +6,7 @@ import { Store } from '../src/store.js';
 import { SessionManager } from '../src/session.js';
 import { DigestManager } from '../src/digest.js';
 import { DigestStore } from '../src/digest-store.js';
+import { validateSession, computeDigestDiff } from '../src/types.js';
 import type { Session, ProjectDigest } from '../src/types.js';
 
 const PROJECT_NAME = 'testproj';
@@ -113,13 +114,15 @@ describe('DigestManager', () => {
         sections: { decisions: ['Use Python'] },
       });
 
-      const digest = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest, diff } = await digestManager.generate(PROJECT_NAME, projectDir);
       expect(digest.sessionCount).toBe(2);
       expect(digest.projectName).toBe(PROJECT_NAME);
       expect(digest.architecture.current).toBe('Building X v2');
       expect(digest.decisions).toHaveLength(2);
       expect(digest.decisions.map(d => d.decision)).toContain('Use TypeScript');
       expect(digest.decisions.map(d => d.decision)).not.toContain('Use Python');
+      expect(diff.newDecisions).toBe(2);
+      expect(diff.newSessions).toBe(2);
     });
 
     it('infers project path from sessions', async () => {
@@ -131,7 +134,7 @@ describe('DigestManager', () => {
       });
 
       // No explicit path — should infer from session's project field
-      const digest = await digestManager.generate(PROJECT_NAME);
+      const { digest } = await digestManager.generate(PROJECT_NAME);
       expect(digest.projectPath).toBe(projectDir);
     });
 
@@ -149,7 +152,7 @@ describe('DigestManager', () => {
         sections: { whatWeAreBuilding: 'v2 redesign' },
       });
 
-      const digest = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.generate(PROJECT_NAME, projectDir);
       expect(digest.architecture.evolution).toHaveLength(2);
       expect(digest.architecture.evolution[0].description).toBe('v1 design');
       expect(digest.architecture.evolution[1].description).toBe('v2 redesign');
@@ -170,7 +173,7 @@ describe('DigestManager', () => {
         sections: { decisions: ['Use JSON', 'Zero deps'] },
       });
 
-      const digest = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.generate(PROJECT_NAME, projectDir);
       expect(digest.decisions).toHaveLength(2);
     });
 
@@ -188,7 +191,7 @@ describe('DigestManager', () => {
         sections: { whatDidNotWork: ['tsx -e fails'] },
       });
 
-      const digest = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.generate(PROJECT_NAME, projectDir);
       const tsxLesson = digest.hardLessons.find(l => l.lesson === 'tsx -e fails');
       expect(tsxLesson?.frequency).toBe(2);
       expect(tsxLesson?.sessionIds).toHaveLength(2);
@@ -205,7 +208,7 @@ describe('DigestManager', () => {
         sections: { keyLearnings: 'Important lesson here' },
       });
 
-      const digest = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.generate(PROJECT_NAME, projectDir);
       expect(digest.keyLearnings).toHaveLength(1);
       expect(digest.keyLearnings[0].category).toBe('general');
       expect(digest.keyLearnings[0].items).toContain('Important lesson here');
@@ -235,7 +238,7 @@ describe('DigestManager', () => {
         },
       });
 
-      const digest = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.generate(PROJECT_NAME, projectDir);
       const ts = digest.keyLearnings.find(l => l.category === 'TypeScript');
       expect(ts?.items).toHaveLength(3);
       expect(ts?.items).toContain('Use strict mode');
@@ -247,7 +250,7 @@ describe('DigestManager', () => {
     });
 
     it('returns empty digest when no sessions match', async () => {
-      const digest = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.generate(PROJECT_NAME, projectDir);
       expect(digest.sessionCount).toBe(0);
       expect(digest.decisions).toEqual([]);
       expect(digest.architecture.current).toBe('');
@@ -267,7 +270,7 @@ describe('DigestManager', () => {
         sections: { blockers: ['new blocker'], nextStep: 'new step' },
       });
 
-      const digest = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.generate(PROJECT_NAME, projectDir);
       expect(digest.blockers).toEqual(['new blocker']);
       expect(digest.nextSteps).toEqual(['new step']);
     });
@@ -282,7 +285,7 @@ describe('DigestManager', () => {
         sections: { decisions: ['Use JSON'] },
       });
 
-      const digest = await digestManager.update(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.update(PROJECT_NAME, projectDir);
       expect(digest.sessionCount).toBe(1);
       expect(digest.decisions[0].decision).toBe('Use JSON');
     });
@@ -304,7 +307,7 @@ describe('DigestManager', () => {
         sections: { decisions: ['Add tests'], whatDidNotWork: ['tsx -e fails'] },
       });
 
-      const digest = await digestManager.update(PROJECT_NAME, projectDir);
+      const { digest } = await digestManager.update(PROJECT_NAME, projectDir);
       expect(digest.sessionCount).toBe(2);
       expect(digest.decisions).toHaveLength(2);
       expect(digest.hardLessons).toHaveLength(1);
@@ -319,8 +322,8 @@ describe('DigestManager', () => {
         sections: { decisions: ['Use JSON'] },
       });
 
-      const d1 = await digestManager.generate(PROJECT_NAME, projectDir);
-      const d2 = await digestManager.update(PROJECT_NAME, projectDir);
+      const { digest: d1 } = await digestManager.generate(PROJECT_NAME, projectDir);
+      const { digest: d2 } = await digestManager.update(PROJECT_NAME, projectDir);
       expect(d2.sessionCount).toBe(d1.sessionCount);
     });
 
@@ -341,7 +344,7 @@ describe('DigestManager', () => {
         sections: { decisions: ['New'] },
       });
 
-      const digest = await digestManager.update(PROJECT_NAME, projectDir, s2.id);
+      const { digest } = await digestManager.update(PROJECT_NAME, projectDir, s2.id);
       expect(digest.decisions.map(d => d.decision)).toContain('New');
     });
   });
@@ -363,5 +366,99 @@ describe('DigestManager', () => {
       const digest = await digestManager.show(projectDir);
       expect(digest?.sessionCount).toBe(1);
     });
+  });
+
+  describe('diff', () => {
+    it('reports changes after incremental update', async () => {
+      await manager.create({
+        title: 'A',
+        project: projectDir,
+        tags: [PROJECT_TAG],
+        sections: { decisions: ['Use JSON'], whatDidNotWork: ['Bad approach'] },
+      });
+
+      await digestManager.generate(PROJECT_NAME, projectDir);
+
+      await manager.create({
+        title: 'B',
+        project: projectDir,
+        tags: [PROJECT_TAG],
+        sections: {
+          decisions: ['Add tests', 'Use vitest'],
+          whatDidNotWork: ['tsx -e fails'],
+          keyLearnings: { 'Testing': ['Write tests first'] },
+        },
+      });
+
+      const { diff } = await digestManager.update(PROJECT_NAME, projectDir);
+      expect(diff.newSessions).toBe(1);
+      expect(diff.newDecisions).toBe(2);
+      expect(diff.newLessons).toBe(1);
+      expect(diff.newLearningItems).toBeGreaterThan(0);
+    });
+
+    it('reports no changes when nothing new', async () => {
+      await manager.create({
+        title: 'A',
+        project: projectDir,
+        tags: [PROJECT_TAG],
+        sections: { decisions: ['Use JSON'] },
+      });
+
+      await digestManager.generate(PROJECT_NAME, projectDir);
+      const { diff } = await digestManager.update(PROJECT_NAME, projectDir);
+      expect(diff.newSessions).toBe(0);
+      expect(diff.newDecisions).toBe(0);
+    });
+  });
+});
+
+describe('validateSession', () => {
+  it('returns no warnings for complete session', () => {
+    const warnings = validateSession({
+      title: 'Good title here',
+      sections: {
+        whatWeAreBuilding: 'Building something',
+        whatWorked: ['Item 1'],
+        decisions: ['Decision 1'],
+        nextStep: 'Do next thing',
+        keyLearnings: 'Learned something',
+      },
+    });
+    expect(warnings).toEqual([]);
+  });
+
+  it('returns error for short title', () => {
+    const warnings = validateSession({ title: 'Hi' });
+    expect(warnings.some(w => w.field === 'title' && w.severity === 'error')).toBe(true);
+  });
+
+  it('warns on missing sections', () => {
+    const warnings = validateSession({ title: 'Valid title here' });
+    expect(warnings.some(w => w.field === 'sections')).toBe(true);
+  });
+
+  it('warns on missing whatWeAreBuilding', () => {
+    const warnings = validateSession({
+      title: 'Valid title here',
+      sections: { whatWorked: ['Item'], decisions: ['D'], nextStep: 'Next', keyLearnings: 'L' },
+    });
+    expect(warnings.some(w => w.field === 'whatWeAreBuilding')).toBe(true);
+  });
+
+  it('warns on missing nextStep', () => {
+    const warnings = validateSession({
+      title: 'Valid title here',
+      sections: { whatWeAreBuilding: 'X', whatWorked: ['Y'], decisions: ['D'], keyLearnings: 'L' },
+    });
+    expect(warnings.some(w => w.field === 'nextStep')).toBe(true);
+  });
+
+  it('warns when no outcomes recorded', () => {
+    const warnings = validateSession({
+      title: 'Valid title here',
+      sections: { whatWeAreBuilding: 'X', decisions: ['D'], nextStep: 'N', keyLearnings: 'L' },
+    });
+    expect(warnings.some(w => w.field === 'whatWorked/whatDidNotWork')).toBe(true);
   });
 });

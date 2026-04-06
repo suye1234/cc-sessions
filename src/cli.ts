@@ -5,7 +5,8 @@ import { Store } from './store.js';
 import { SessionManager } from './session.js';
 import { SearchEngine } from './search.js';
 import { DigestManager } from './digest.js';
-import type { SessionFilter, SessionSections, FileState } from './types.js';
+import { validateSession } from './types.js';
+import type { SessionFilter, SessionSections, FileState, DigestDiff } from './types.js';
 
 const DEFAULT_DATA_DIR = join(resolve('.'), 'data');
 const DEFAULT_IMPORT_DIR = join(homedir(), '.claude', 'session-data');
@@ -212,6 +213,21 @@ async function importSessions(importDir?: string): Promise<number> {
 
 // -- CLI --
 
+function printDigestDiff(diff: DigestDiff): void {
+  const parts: string[] = [];
+  if (diff.newSessions > 0) parts.push(`+${diff.newSessions} session(s)`);
+  if (diff.newDecisions > 0) parts.push(`+${diff.newDecisions} decision(s)`);
+  if (diff.newLessons > 0) parts.push(`+${diff.newLessons} lesson(s)`);
+  if (diff.newLearningItems > 0) parts.push(`+${diff.newLearningItems} learning(s)`);
+  if (diff.newLearningCategories > 0) parts.push(`+${diff.newLearningCategories} category(ies)`);
+  if (diff.architectureUpdated) parts.push('architecture updated');
+  if (parts.length > 0) {
+    console.log(`Changes: ${parts.join(', ')}`);
+  } else {
+    console.log('Changes: (none)');
+  }
+}
+
 function printHelp(): void {
   console.log(`
 sessions - Conversation session manager
@@ -381,8 +397,26 @@ async function main(): Promise<void> {
         return;
       }
     }
+    // Validate session quality
+    const warnings = validateSession({ title, sections: opts.sections as SessionSections | undefined });
+    if (warnings.length > 0) {
+      const errors = warnings.filter(w => w.severity === 'error');
+      const warns = warnings.filter(w => w.severity === 'warning');
+      if (errors.length > 0) {
+        console.error('Session quality errors:');
+        for (const e of errors) console.error(`  ✗ ${e.field}: ${e.message}`);
+        return;
+      }
+      if (warns.length > 0) {
+        console.error('Session quality warnings:');
+        for (const w of warns) console.error(`  △ ${w.field}: ${w.message}`);
+      }
+    }
+
     const session = await manager.create(opts as Parameters<typeof manager.create>[0]);
+    const quality = warnings.length === 0 ? '  Quality: ✓ all fields present' : `  Quality: ${warnings.length} warning(s)`;
     console.log(JSON.stringify({ id: session.id, title: session.title }, null, 2));
+    console.log(quality);
     return;
   }
 
@@ -491,16 +525,18 @@ async function main(): Promise<void> {
     const digestManager = new DigestManager(manager, store);
 
     if (subcommand === 'generate') {
-      const digest = await digestManager.generate(projectName, explicitPath);
+      const { digest, diff } = await digestManager.generate(projectName, explicitPath);
       console.log(`Digest generated: ${digest.sessionCount} sessions aggregated`);
       console.log(`Written to: ${digest.projectPath}/.claude/project-digest.json`);
+      printDigestDiff(diff);
       return;
     }
 
     if (subcommand === 'update') {
       const sessionId = flags['session-id'];
-      const digest = await digestManager.update(projectName, explicitPath, sessionId);
+      const { digest, diff } = await digestManager.update(projectName, explicitPath, sessionId);
       console.log(`Digest updated: ${digest.sessionCount} sessions`);
+      printDigestDiff(diff);
       return;
     }
 

@@ -1,14 +1,21 @@
 import { Store } from './store.js';
 import { SessionManager } from './session.js';
 import { DigestStore } from './digest-store.js';
+import { computeDigestDiff } from './types.js';
 import type {
   Session,
   ProjectDigest,
+  DigestDiff,
   DigestDecision,
   DigestLesson,
   DigestLearning,
   DigestArchitectureEntry,
 } from './types.js';
+
+export interface DigestUpdateResult {
+  digest: ProjectDigest;
+  diff: DigestDiff;
+}
 
 const MAX_EVOLUTION = 30;
 const MAX_LESSONS = 50;
@@ -59,7 +66,7 @@ export class DigestManager {
     return best;
   }
 
-  async generate(projectName: string, projectPath?: string): Promise<ProjectDigest> {
+  async generate(projectName: string, projectPath?: string): Promise<DigestUpdateResult> {
     const sessions = await this.findSessionsByProjectTag(projectName);
     const resolvedPath = projectPath ?? this.inferProjectPath(sessions);
 
@@ -69,11 +76,11 @@ export class DigestManager {
 
     const digest = this.buildDigest(projectName, resolvedPath, sessions);
     await this.digestStore.write(resolvedPath, digest);
-    return digest;
+    const diff = computeDigestDiff(null, digest);
+    return { digest, diff };
   }
 
-  async update(projectName: string, projectPath?: string, sessionId?: string): Promise<ProjectDigest> {
-    // Need path to read existing digest — try explicit, then infer
+  async update(projectName: string, projectPath?: string, sessionId?: string): Promise<DigestUpdateResult> {
     const sessions = await this.findSessionsByProjectTag(projectName);
     const resolvedPath = projectPath ?? this.inferProjectPath(sessions);
 
@@ -94,7 +101,9 @@ export class DigestManager {
       newSessions = sessions.filter(s => !digested.has(s.id));
     }
 
-    if (newSessions.length === 0) return existing;
+    if (newSessions.length === 0) {
+      return { digest: existing, diff: computeDigestDiff(existing, existing) };
+    }
 
     let digest = existing;
     for (const session of newSessions) {
@@ -102,7 +111,8 @@ export class DigestManager {
     }
 
     await this.digestStore.write(resolvedPath, digest);
-    return digest;
+    const diff = computeDigestDiff(existing, digest);
+    return { digest, diff };
   }
 
   async show(projectPath: string): Promise<ProjectDigest | null> {
