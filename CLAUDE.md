@@ -35,6 +35,9 @@ npx tsx src/cli.ts update <id> [--title T] [--summary S] [--tags a,b]
 npx tsx src/cli.ts add-message <id> --role ROLE --content CONTENT
 npx tsx src/cli.ts import [path]           # default: ~/.claude/session-data/
 npx tsx src/cli.ts delete <id>
+npx tsx src/cli.ts digest generate <name> [--path P]  # generate digest (by project:<name> tag)
+npx tsx src/cli.ts digest show [path]                 # show project digest
+npx tsx src/cli.ts digest update <name> [--path P]    # incremental update
 
 # Start web dashboard
 npm run dashboard                          # http://localhost:8283
@@ -44,15 +47,17 @@ npm run dashboard                          # http://localhost:8283
 
 ```
 src/
-├── types.ts      # All type definitions (Session, Message, SessionIndex, etc.)
-├── store.ts      # Low-level file I/O: reads/writes JSON session files + index
-├── session.ts    # SessionManager: CRUD operations, uses Store internally
-├── search.ts     # SearchEngine: full-text search across session messages
-├── server.ts     # HTTP server: JSON API + static file serving for dashboard
-├── cli.ts        # CLI entry point + session-data import parser
-└── index.ts      # Public API exports
+├── types.ts         # All type definitions (Session, Message, ProjectDigest, etc.)
+├── store.ts         # Low-level file I/O: reads/writes JSON session files + index
+├── session.ts       # SessionManager: CRUD operations, uses Store internally
+├── search.ts        # SearchEngine: full-text search across session messages
+├── digest-store.ts  # DigestStore: reads/writes project digest to target project
+├── digest.ts        # DigestManager: aggregates sessions into project-level digest
+├── server.ts        # HTTP server: JSON API + static file serving for dashboard
+├── cli.ts           # CLI entry point + session-data import parser
+└── index.ts         # Public API exports
 public/
-└── index.html    # Web dashboard (vanilla HTML/CSS/JS, dark theme)
+└── index.html       # Web dashboard (vanilla HTML/CSS/JS, dark theme)
 ```
 
 - **Store** handles file persistence: one JSON file per session in `data/sessions/`, with a lightweight `data/index.json` for fast listing.
@@ -64,3 +69,7 @@ public/
 
 - `SESSIONS_DATA_DIR` — override the data directory (default: `./data`)
 - `PORT` — dashboard server port (default: `8283`)
+
+## Project Context
+
+Before starting non-trivial work, read `.claude/project-digest.json` for project history, architectural decisions, and lessons learned. This file is auto-generated from session data and contains cross-session knowledge that helps avoid repeating past mistakes.

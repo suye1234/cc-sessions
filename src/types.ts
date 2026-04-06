@@ -83,3 +83,52 @@ export interface CreateSessionOptions {
   sections?: SessionSections;
   metadata?: Record<string, unknown>;
 }
+
+// Project Digest types
+
+export interface DigestArchitectureEntry {
+  date: string;
+  sessionId: string;
+  description: string;
+}
+
+export interface DigestDecision {
+  decision: string;
+  sessionId: string;
+  date: string;
+  status: 'active' | 'reversed' | 'superseded';
+}
+
+export interface DigestLesson {
+  lesson: string;
+  frequency: number;
+  sessionIds: string[];
+  firstSeen: string;
+  lastSeen: string;
+}
+
+export interface DigestLearning {
+  category: string;
+  items: string[];
+  sessionIds: string[];
+}
+
+export interface ProjectDigest {
+  version: 1;
+  projectName: string;
+  projectPath: string;
+  lastUpdated: string;
+  sessionCount: number;
+  digestedSessionIds: string[];
+
+  architecture: {
+    current: string;
+    evolution: DigestArchitectureEntry[];
+  };
+
+  decisions: DigestDecision[];
+  hardLessons: DigestLesson[];
+  keyLearnings: DigestLearning[];
+  blockers: string[];
+  nextSteps: string[];
+}

@@ -62,7 +62,21 @@ The `--sections` value is a JSON string containing all sections:
 
 **Tip:** If the JSON is too long for a single command line, write the sections JSON to a temp file and use `$(cat _sections.json)` — but prefer inline for simplicity.
 
-### Step 3: Confirm with user
+### Step 3: Update Project Digest (conditional)
+
+**Only trigger digest update when** the session's tags include a `project:<name>` tag (e.g., `project:sessions`, `project:harness`).
+
+If a `project:<name>` tag is present:
+```bash
+cd /Users/suye/AI/claudecode/sessions
+npx tsx src/cli.ts digest update "<PROJECT_NAME>" --session-id "<SESSION_ID>"
+```
+
+**Skip digest update when:**
+- No `project:<name>` tag — the session is general learning, exploration, or discussion
+- The `project:<name>` tag should be added during capture when the session is about building/modifying a specific project
+
+### Step 4: Confirm with user
 
 Display:
 ```
@@ -70,6 +84,7 @@ Session captured: <id>
 Title: <title>
 Tags: <tags>
 Sections: <list of non-empty sections>
+Project Digest: updated (<project-path>/.claude/project-digest.json)
 
 View in dashboard: cd /Users/suye/AI/claudecode/sessions && npm run dashboard
 ```

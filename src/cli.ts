@@ -4,6 +4,7 @@ import { homedir } from 'node:os';
 import { Store } from './store.js';
 import { SessionManager } from './session.js';
 import { SearchEngine } from './search.js';
+import { DigestManager } from './digest.js';
 import type { SessionFilter, SessionSections, FileState } from './types.js';
 
 const DEFAULT_DATA_DIR = join(resolve('.'), 'data');
@@ -223,6 +224,9 @@ Commands:
   add-message <id> --role ROLE --content CONTENT          Add message to session
   import [path]                                           Import from session-data
   delete <id>                                             Delete a session
+  digest generate <name> [--path /project/path]            Generate digest (filters by project:<name> tag)
+  digest show [path]                                      Show project digest
+  digest update <name> [--path P] [--session-id ID]       Update digest incrementally
 
 Environment:
   SESSIONS_DATA_DIR    Data directory (default: ./data)
@@ -409,6 +413,98 @@ async function main(): Promise<void> {
     const dir = positional[0];
     const count = await importSessions(dir);
     console.log(`Imported ${count} session(s).`);
+    return;
+  }
+
+  if (command === 'digest') {
+    const subcommand = positional[0];
+    const projectName = positional[1] ?? flags['name'];
+    const explicitPath = flags['path'] ? resolve(flags['path']) : undefined;
+
+    if (!subcommand) {
+      console.error('Usage: sessions digest <generate|show|update> <project-name> [--path /project/path]');
+      return;
+    }
+
+    // show can work with just a path (reads the file directly)
+    if (subcommand === 'show') {
+      const showPath = explicitPath ?? (projectName ? resolve(projectName) : resolve('.'));
+      const store = new Store(getDataDir());
+      const manager = new SessionManager(store);
+      await manager.init();
+      const digestManager = new DigestManager(manager, store);
+
+      const digest = await digestManager.show(showPath);
+      if (!digest) {
+        console.error('No digest found. Run: sessions digest generate <project-name>');
+        return;
+      }
+      console.log(`# Project Digest: ${digest.projectName} (${digest.projectPath})`);
+      console.log(`Last updated: ${digest.lastUpdated}`);
+      console.log(`Sessions: ${digest.sessionCount}\n`);
+
+      console.log('## Architecture');
+      console.log(digest.architecture.current || '(none)');
+
+      if (digest.decisions.length > 0) {
+        console.log('\n## Active Decisions');
+        for (const d of digest.decisions.filter(d => d.status === 'active')) {
+          console.log(`- ${d.decision}  (${d.date})`);
+        }
+      }
+
+      if (digest.hardLessons.length > 0) {
+        console.log('\n## Hard Lessons');
+        for (const l of digest.hardLessons.slice(0, 10)) {
+          console.log(`- [${l.frequency}x] ${l.lesson}`);
+        }
+      }
+
+      if (digest.keyLearnings.length > 0) {
+        console.log('\n## Key Learnings');
+        for (const kl of digest.keyLearnings) {
+          console.log(`\n### ${kl.category}`);
+          for (const item of kl.items) {
+            console.log(`- ${item}`);
+          }
+        }
+      }
+
+      if (digest.nextSteps.length > 0) {
+        console.log('\n## Next Steps');
+        for (const ns of digest.nextSteps) {
+          console.log(`- ${ns}`);
+        }
+      }
+      return;
+    }
+
+    // generate and update require project name (for tag filtering)
+    if (!projectName) {
+      console.error('Usage: sessions digest <generate|update> <project-name> [--path /project/path]');
+      return;
+    }
+
+    const store = new Store(getDataDir());
+    const manager = new SessionManager(store);
+    await manager.init();
+    const digestManager = new DigestManager(manager, store);
+
+    if (subcommand === 'generate') {
+      const digest = await digestManager.generate(projectName, explicitPath);
+      console.log(`Digest generated: ${digest.sessionCount} sessions aggregated`);
+      console.log(`Written to: ${digest.projectPath}/.claude/project-digest.json`);
+      return;
+    }
+
+    if (subcommand === 'update') {
+      const sessionId = flags['session-id'];
+      const digest = await digestManager.update(projectName, explicitPath, sessionId);
+      console.log(`Digest updated: ${digest.sessionCount} sessions`);
+      return;
+    }
+
+    console.error('Unknown digest subcommand. Use: generate, show, update');
     return;
   }
 

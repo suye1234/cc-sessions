@@ -95,7 +95,20 @@ Alternatively, use CLI for simple field updates:
 npx tsx src/cli.ts update <id> --sections '{"nextStep":"..."}' --title "..." --tags "..."
 ```
 
-### Step 5: Confirm with user
+### Step 5: Update Project Digest (conditional)
+
+**Only trigger digest update when** the session's tags include a `project:<name>` tag (e.g., `project:sessions`, `project:harness`).
+
+If a `project:<name>` tag is present:
+```bash
+cd /Users/suye/AI/claudecode/sessions
+npx tsx src/cli.ts digest update "<PROJECT_NAME>" --session-id "<SESSION_ID>"
+```
+
+**Skip digest update when:**
+- No `project:<name>` tag — the session is general learning, exploration, or discussion
+
+### Step 6: Confirm with user
 
 Display:
 
@@ -109,6 +122,7 @@ Changes:
   + decisions: <N> new items
   ~ nextStep: updated
   ~ blockers: updated
+  Project Digest: updated (<project-path>/.claude/project-digest.json)
 
 View in dashboard: cd /Users/suye/AI/claudecode/sessions && npm run dashboard
 ```

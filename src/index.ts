@@ -1,6 +1,8 @@
 export { Store } from './store.js';
 export { SessionManager } from './session.js';
 export { SearchEngine } from './search.js';
+export { DigestManager } from './digest.js';
+export { DigestStore } from './digest-store.js';
 export type {
   Session,
   Message,
@@ -10,4 +12,9 @@ export type {
   SearchResult,
   SearchMatch,
   CreateSessionOptions,
+  ProjectDigest,
+  DigestDecision,
+  DigestLesson,
+  DigestArchitectureEntry,
+  DigestLearning,
 } from './types.js';
