@@ -4,7 +4,7 @@ description: Update an existing session with new progress from the current conve
 
 # Update Session
 
-Update an existing session in `/Users/suye/AI/claudecode/sessions/data/` with new progress from the current conversation.
+Update an existing session in `$SESSIONS_HOME/data/` with new progress from the current conversation.
 
 ## Process
 
@@ -14,7 +14,7 @@ If $ARGUMENTS is provided, treat it as a session ID prefix.
 
 If not provided, try to **auto-match the current conversation**:
 1. Look at the current conversation context — identify the project path, title, or topic being discussed
-2. Run: `cd /Users/suye/AI/claudecode/sessions && npx tsx src/cli.ts list`
+2. Run: `cd $SESSIONS_HOME && npx tsx src/cli.ts list`
 3. Match against session titles, projects, and tags to find the most likely candidate
 4. If a single session clearly matches (same project path or very similar title), use it and inform the user:
    ```
@@ -25,7 +25,7 @@ If not provided, try to **auto-match the current conversation**:
 ### Step 2: Load the current session
 
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 ```
 
 Read `data/sessions/<full_id>.json` directly to get the current sections.
@@ -49,7 +49,7 @@ Do NOT replace existing items — **append** new ones to lists.
 Write a temporary script to merge updates:
 
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 
 npx tsx -e "
 import { readFileSync, writeFileSync } from 'fs';
@@ -101,7 +101,7 @@ npx tsx src/cli.ts update <id> --sections '{"nextStep":"..."}' --title "..." --t
 
 If a `project:<name>` tag is present:
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 npx tsx src/cli.ts digest update "<PROJECT_NAME>" --session-id "<SESSION_ID>"
 ```
 
@@ -124,7 +124,7 @@ Changes:
   ~ blockers: updated
   Project Digest: updated (<project-path>/.claude/project-digest.json)
 
-View in dashboard: cd /Users/suye/AI/claudecode/sessions && npm run dashboard
+View in dashboard: cd $SESSIONS_HOME && npm run dashboard
 ```
 
 ## Key Principle

@@ -4,7 +4,7 @@ description: Save the current conversation as a structured session summary (alig
 
 # Capture Session
 
-Capture the current conversation into the sessions project at `/Users/suye/AI/claudecode/sessions/` as a structured session summary. Focus on **what was accomplished**, not raw messages.
+Capture the current conversation into the sessions project at `$SESSIONS_HOME/` as a structured session summary. Focus on **what was accomplished**, not raw messages.
 
 ## Process
 
@@ -35,7 +35,7 @@ Review the current conversation and fill in these sections (skip empty ones):
 Build a JSON object with the extracted sections, then call CLI `create` directly:
 
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 
 npx tsx src/cli.ts create \
   --title "<TITLE>" \
@@ -68,7 +68,7 @@ The `--sections` value is a JSON string containing all sections:
 
 If a `project:<name>` tag is present:
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 npx tsx src/cli.ts digest update "<PROJECT_NAME>" --session-id "<SESSION_ID>"
 ```
 
@@ -86,7 +86,7 @@ Tags: <tags>
 Sections: <list of non-empty sections>
 Project Digest: updated (<project-path>/.claude/project-digest.json)
 
-View in dashboard: cd /Users/suye/AI/claudecode/sessions && npm run dashboard
+View in dashboard: cd $SESSIONS_HOME && npm run dashboard
 ```
 
 ## Key Principle

@@ -4,14 +4,14 @@ description: Full-text search across all structured sessions — searches in tit
 
 # Search Sessions
 
-Search across all sessions in `/Users/suye/AI/claudecode/sessions/data/`.
+Search across all sessions in `$SESSIONS_HOME/data/`.
 
 ## Process
 
 Run the CLI:
 
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 npx tsx src/cli.ts search "<query>" [--tag TAG] [--project PROJECT]
 ```
 

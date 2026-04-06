@@ -4,14 +4,14 @@ description: List all structured sessions from the sessions project with optiona
 
 # List Sessions
 
-List all sessions stored in `/Users/suye/AI/claudecode/sessions/data/`.
+List all sessions stored in `$SESSIONS_HOME/data/`.
 
 ## Process
 
 Run the CLI:
 
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 npx tsx src/cli.ts list [--tag TAG] [--project PROJECT] [--query QUERY]
 ```
 

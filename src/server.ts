@@ -4,6 +4,7 @@ import { join, resolve, extname } from 'node:path';
 import { Store } from './store.js';
 import { SessionManager } from './session.js';
 import { SearchEngine } from './search.js';
+import { DigestStore } from './digest-store.js';
 
 const PORT = parseInt(process.env['PORT'] ?? '8283', 10);
 const DATA_DIR = process.env['SESSIONS_DATA_DIR'] ?? join(resolve('.'), 'data');
@@ -21,6 +22,7 @@ const MIME_TYPES: Record<string, string> = {
 const store = new Store(DATA_DIR);
 const manager = new SessionManager(store);
 const search = new SearchEngine(store);
+const digestStore = new DigestStore();
 
 function json(res: import('node:http').ServerResponse, data: unknown, status = 200): void {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' });
@@ -92,10 +94,34 @@ const server = createServer(async (req, res) => {
       return;
     }
 
-    // CORS preflight for DELETE
+    if (sessionMatch && req.method === 'PUT') {
+      const id = sessionMatch[1];
+      const sessions = await manager.list();
+      const match = sessions.find(s => s.id.startsWith(id));
+      if (!match) { json(res, { error: 'Not found' }, 404); return; }
+
+      const chunks: Buffer[] = [];
+      for await (const chunk of req) chunks.push(chunk as Buffer);
+      const body = JSON.parse(Buffer.concat(chunks).toString('utf-8'));
+
+      const updated = await manager.update(match.id, body);
+      if (!updated) { json(res, { error: 'Update failed' }, 500); return; }
+      json(res, { session: updated });
+      return;
+    }
+
+    // CORS preflight
     if (sessionMatch && req.method === 'OPTIONS') {
-      res.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
+      res.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, PUT, DELETE, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
       res.end();
+      return;
+    }
+
+    if (path === '/api/digest' && req.method === 'GET') {
+      const projectPath = url.searchParams.get('path') ?? resolve('.');
+      const digest = await digestStore.read(projectPath);
+      if (!digest) { json(res, { digest: null }); return; }
+      json(res, { digest });
       return;
     }
 

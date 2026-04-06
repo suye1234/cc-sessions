@@ -4,7 +4,7 @@ description: Delete one or more sessions from the sessions project. Supports ID 
 
 # Delete Session
 
-Delete sessions from `/Users/suye/AI/claudecode/sessions/data/`.
+Delete sessions from `$SESSIONS_HOME/data/`.
 
 ## Process
 
@@ -15,7 +15,7 @@ If $ARGUMENTS is provided:
 - Resolve each to the full UUID via CLI
 
 If not provided:
-- Run: `cd /Users/suye/AI/claudecode/sessions && npx tsx src/cli.ts list`
+- Run: `cd $SESSIONS_HOME && npx tsx src/cli.ts list`
 - Show the list and ask the user which session(s) to delete
 
 ### Step 2: Confirm with user
@@ -35,7 +35,7 @@ Wait for explicit confirmation. Do NOT proceed without it.
 ### Step 3: Delete
 
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 npx tsx src/cli.ts delete <full_id>
 ```
 

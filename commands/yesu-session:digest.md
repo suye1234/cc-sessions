@@ -21,7 +21,7 @@ If no project-path is provided, use the current working directory.
 ### Step 2: Execute
 
 ```bash
-cd /Users/suye/AI/claudecode/sessions
+cd $SESSIONS_HOME
 
 # Generate (full rebuild from all sessions)
 npx tsx src/cli.ts digest generate "<PROJECT_PATH>"

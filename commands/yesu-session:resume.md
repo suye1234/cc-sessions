@@ -4,7 +4,7 @@ description: Load one or more structured sessions (max 5) from the sessions proj
 
 # Resume Session
 
-Load sessions from `/Users/suye/AI/claudecode/sessions/data/` and orient fully before doing any work.
+Load sessions from `$SESSIONS_HOME/data/` and orient fully before doing any work.
 
 Supports loading **1–5 sessions** at once. Multiple sessions are useful when related topics need to be discussed together.
 
@@ -22,18 +22,18 @@ Spaces are **not** used as separators — they are part of the search keyword (e
 If more than 5 IDs are provided, reject with: "最多支持同时加载 5 个 session，请减少数量。"
 
 For each argument, treat it as a session ID prefix or title keyword:
-- Run: `cd /Users/suye/AI/claudecode/sessions && npx tsx src/cli.ts list --query "<arg>"`
+- Run: `cd $SESSIONS_HOME && npx tsx src/cli.ts list --query "<arg>"`
 - If multiple matches for one argument, show them and ask user to pick
 
 If no argument:
-- Run: `cd /Users/suye/AI/claudecode/sessions && npx tsx src/cli.ts list`
+- Run: `cd $SESSIONS_HOME && npx tsx src/cli.ts list`
 - Show the list and ask the user which session(s) to resume
 
 ### Step 2: Load sessions
 
 For each session:
 1. First resolve the short ID to the full UUID by listing files in `data/sessions/` that start with the short ID prefix
-2. Run: `cd /Users/suye/AI/claudecode/sessions && npx tsx src/cli.ts show <short_id>` to get the session details — the CLI handles partial ID matching internally
+2. Run: `cd $SESSIONS_HOME && npx tsx src/cli.ts show <short_id>` to get the session details — the CLI handles partial ID matching internally
 3. Then read the full JSON from `data/sessions/<full_uuid>.json` for complete sections access
 
 **Important:** Never assume the short ID is the full filename. Always resolve via CLI or glob match first.

@@ -242,6 +242,18 @@ header .count-badge {
 .tag:nth-child(3n) { background: #d4c5f9; }
 
 /* Detail panel */
+.detail-container {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  max-height: 0;
+  opacity: 0;
+}
+
+.detail-container.open {
+  max-height: 5000px;
+  opacity: 1;
+}
+
 .detail-panel {
   background: var(--card-bg);
   border: var(--border-w) solid var(--border);
@@ -255,15 +267,19 @@ header .count-badge {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 20px;
+  gap: 10px;
 }
 
 .detail-header h2 {
   font-size: 24px;
   font-weight: 700;
   line-height: 1.2;
+  flex: 1;
 }
 
-.close-btn {
+.btn-group { display: flex; gap: 6px; flex-shrink: 0; }
+
+.close-btn, .edit-btn, .save-btn, .cancel-btn {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 700;
@@ -275,6 +291,11 @@ header .count-badge {
 }
 
 .close-btn:hover { background: var(--red); color: #fff; }
+.edit-btn { border-color: var(--accent-2); color: var(--accent-2); }
+.edit-btn:hover { background: var(--accent-2); color: #fff; }
+.save-btn { background: var(--green); color: #fff; border-color: var(--green); }
+.save-btn:hover { background: #05b88a; }
+.cancel-btn:hover { background: #eee; }
 
 .delete-btn {
   font-family: var(--mono);
@@ -286,7 +307,6 @@ header .count-badge {
   border: 2px solid var(--red);
   color: var(--red);
   cursor: pointer;
-  margin-right: 8px;
 }
 .delete-btn:hover { background: var(--red); color: #fff; }
 
@@ -314,9 +334,7 @@ header .count-badge {
 }
 
 /* Section blocks */
-.section-block {
-  margin-bottom: 20px;
-}
+.section-block { margin-bottom: 20px; }
 
 .section-block h3 {
   font-family: var(--mono);
@@ -367,10 +385,78 @@ header .count-badge {
 
 .section-content li:nth-child(even) { border-left-color: var(--accent-2); }
 
-/* Key learnings categories */
-.kl-category {
-  margin-bottom: 16px;
+/* Edit mode list items */
+.section-content li .item-delete {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  font-size: 14px;
+  color: var(--red);
+  cursor: pointer;
+  display: none;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 6px;
 }
+.section-content li .item-delete:hover { background: var(--red); color: #fff; }
+
+.edit-mode .section-content li .item-delete { display: block; }
+
+.add-item-row {
+  display: none;
+  gap: 0;
+  margin-top: 6px;
+}
+
+.edit-mode .add-item-row { display: flex; }
+
+.add-item-row input {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 8px 12px;
+  border: 2px solid var(--border);
+  outline: none;
+}
+
+.add-item-row button {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 16px;
+  background: var(--green);
+  color: #fff;
+  border: 2px solid var(--border);
+  border-left: none;
+  cursor: pointer;
+}
+
+/* Editable fields */
+.edit-input {
+  font-family: var(--font);
+  font-size: inherit;
+  font-weight: inherit;
+  width: 100%;
+  padding: 4px 8px;
+  border: 2px solid var(--accent-2);
+  background: #f8f8ff;
+  outline: none;
+}
+
+.edit-textarea {
+  font-family: var(--font);
+  font-size: 14px;
+  width: 100%;
+  min-height: 60px;
+  padding: 8px 12px;
+  border: 2px solid var(--accent-2);
+  background: #f8f8ff;
+  outline: none;
+  resize: vertical;
+}
+
+/* Key learnings categories */
+.kl-category { margin-bottom: 16px; }
 .kl-category h4 {
   font-family: var(--mono);
   font-size: 12px;
@@ -382,9 +468,7 @@ header .count-badge {
   color: #fff;
   display: inline-block;
 }
-.kl-category ul {
-  counter-reset: item;
-}
+.kl-category ul { counter-reset: item; }
 
 /* File table */
 .file-table {
@@ -451,6 +535,197 @@ mark {
   font-weight: 700;
 }
 
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.pagination button {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border: 2px solid var(--border);
+  background: var(--card-bg);
+  cursor: pointer;
+}
+
+.pagination button:hover { background: var(--yellow); }
+.pagination button:disabled { opacity: 0.3; cursor: default; }
+.pagination button:disabled:hover { background: var(--card-bg); }
+.pagination .page-info { font-weight: 700; }
+
+/* Digest tab */
+.digest-header {
+  background: var(--card-bg);
+  border: var(--border-w) solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+
+.digest-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.digest-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.digest-meta strong { color: var(--ink); }
+
+.digest-section {
+  background: var(--card-bg);
+  border: var(--border-w) solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.digest-section h3 {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+  padding: 6px 12px;
+  background: var(--ink);
+  color: var(--bg);
+  display: inline-block;
+}
+
+/* Timeline */
+.timeline { position: relative; padding-left: 24px; }
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent-2);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: #faf8f2;
+  border: 2px solid #e0e0d8;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -22px;
+  top: 16px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-2);
+  border: 2px solid var(--border);
+  border-radius: 50%;
+}
+
+.timeline-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-muted);
+  margin-bottom: 4px;
+}
+
+/* Decision status */
+.decision-item {
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  border-left: 5px solid var(--green);
+  background: #faf8f2;
+  font-size: 13px;
+  line-height: 1.6;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.decision-item.reversed { border-left-color: var(--red); opacity: 0.6; text-decoration: line-through; }
+.decision-item.superseded { border-left-color: var(--ink-muted); opacity: 0.5; }
+
+.decision-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Lesson bar */
+.lesson-item {
+  margin-bottom: 8px;
+}
+
+.lesson-bar {
+  height: 6px;
+  background: var(--red);
+  margin-bottom: 4px;
+  transition: width 0.3s;
+}
+
+.lesson-text {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.lesson-freq {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  margin-right: 6px;
+}
+
+/* Collapsible */
+.collapsible-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.collapsible-header::after {
+  content: ' +';
+  font-family: var(--mono);
+}
+
+.collapsible-header.open::after {
+  content: ' -';
+}
+
+.collapsible-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.collapsible-body.open {
+  max-height: 2000px;
+}
+
 .empty {
   text-align: center;
   color: var(--ink-muted);
@@ -467,6 +742,23 @@ mark {
   padding: 30px 0;
   font-family: var(--mono);
 }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .container { padding: 16px 12px; }
+  header h1 { font-size: 24px; }
+  .tabs button { padding: 8px 14px; font-size: 11px; }
+  .filters { flex-direction: column; }
+  .filters input[type="date"] { width: 100%; }
+  .detail-panel { padding: 16px; }
+  .detail-header { flex-direction: column; }
+  .detail-header h2 { font-size: 18px; }
+  .session-card { padding: 14px 16px; }
+  .session-card .title { font-size: 15px; }
+  .digest-header { padding: 16px; }
+  .digest-section { padding: 14px 16px; }
+  .digest-meta { flex-direction: column; gap: 4px; }
+}
 </style>
 </head>
 <body>
@@ -479,6 +771,7 @@ mark {
   <div class="tabs">
     <button class="active" data-tab="browse" onclick="switchTab('browse')">Browse</button>
     <button data-tab="search" onclick="switchTab('search')">Search</button>
+    <button data-tab="digest" onclick="switchTab('digest')">Digest</button>
   </div>
 
   <div id="tab-browse">
@@ -489,8 +782,14 @@ mark {
       <select id="filter-tag" onchange="loadSessions()">
         <option value="">ALL TAGS</option>
       </select>
+      <select id="filter-sort" onchange="loadSessions()">
+        <option value="updated">UPDATED</option>
+        <option value="created">CREATED</option>
+        <option value="title">TITLE</option>
+      </select>
     </div>
     <div id="session-list" class="session-list"></div>
+    <div id="pagination" class="pagination"></div>
   </div>
 
   <div id="tab-search" style="display:none">
@@ -500,12 +799,20 @@ mark {
     </div>
     <div id="search-results"></div>
   </div>
+
+  <div id="tab-digest" style="display:none">
+    <div id="digest-content"></div>
+  </div>
 </div>
 
 <script>
 const API = '';
 let allTags = new Set();
+let allSessions = [];
+let currentPage = 1;
+const PAGE_SIZE = 20;
 let debounceTimer = null;
+let editState = null; // { id, session } when editing
 
 function debouncedLoad() {
   clearTimeout(debounceTimer);
@@ -516,8 +823,12 @@ function switchTab(tab) {
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.getElementById('tab-browse').style.display = tab === 'browse' ? '' : 'none';
   document.getElementById('tab-search').style.display = tab === 'search' ? '' : 'none';
+  document.getElementById('tab-digest').style.display = tab === 'digest' ? '' : 'none';
   if (tab === 'search') document.getElementById('search-input').focus();
+  if (tab === 'digest') loadDigest();
 }
+
+// ── Browse ──
 
 async function loadSessions() {
   const params = new URLSearchParams();
@@ -532,16 +843,38 @@ async function loadSessions() {
 
   const res = await fetch(`${API}/api/sessions?${params}`);
   const data = await res.json();
-  renderSessions(data.sessions);
+  allSessions = sortSessions(data.sessions);
+  currentPage = 1;
+  renderPage();
+}
+
+function sortSessions(sessions) {
+  const sort = document.getElementById('filter-sort').value;
+  return [...sessions].sort((a, b) => {
+    if (sort === 'title') return a.title.localeCompare(b.title);
+    if (sort === 'created') return b.createdAt.localeCompare(a.createdAt);
+    return b.updatedAt.localeCompare(a.updatedAt);
+  });
+}
+
+function renderPage() {
+  const sessions = allSessions;
+  document.getElementById('stats').textContent = sessions.length;
+  sessions.forEach(s => s.tags.forEach(t => allTags.add(t)));
+  updateTagFilter();
+
+  const total = sessions.length;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page = sessions.slice(start, start + PAGE_SIZE);
+
+  renderSessions(page);
+  renderPagination(totalPages);
 }
 
 function renderSessions(sessions) {
   const el = document.getElementById('session-list');
-  document.getElementById('stats').textContent = sessions.length;
-
-  sessions.forEach(s => s.tags.forEach(t => allTags.add(t)));
-  updateTagFilter();
-
   if (!sessions.length) {
     el.innerHTML = '<div class="empty">No sessions found</div>';
     return;
@@ -560,6 +893,23 @@ function renderSessions(sessions) {
   `).join('');
 }
 
+function renderPagination(totalPages) {
+  const el = document.getElementById('pagination');
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <button onclick="goPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>PREV</button>
+    <span class="page-info">${currentPage} / ${totalPages}</span>
+    <button onclick="goPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>NEXT</button>
+  `;
+}
+
+function goPage(p) {
+  currentPage = p;
+  renderPage();
+  closeDetail();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function updateTagFilter() {
   const select = document.getElementById('filter-tag');
   const cur = select.value;
@@ -567,21 +917,21 @@ function updateTagFilter() {
     [...allTags].sort().map(t => `<option value="${esc(t)}"${t===cur?' selected':''}>${esc(t).toUpperCase()}</option>`).join('');
 }
 
+// ── Detail ──
+
 async function showDetail(id) {
   const card = document.querySelector(`.session-card[data-id="${id}"]`);
   if (!card) return;
 
-  // Toggle: if this card's detail is already open, close it
   const existing = card.nextElementSibling;
   if (existing && existing.classList.contains('detail-container')) {
     existing.remove();
     return;
   }
 
-  // Remove any other open detail panel
   closeDetail();
+  editState = null;
 
-  // Create detail container after the clicked card
   const c = document.createElement('div');
   c.className = 'detail-container';
   c.innerHTML = '<div class="loading">LOADING...</div>';
@@ -590,10 +940,23 @@ async function showDetail(id) {
   const res = await fetch(`${API}/api/sessions/${id}`);
   const data = await res.json();
   const s = data.session;
+
+  renderDetail(c, s, false);
+  requestAnimationFrame(() => c.classList.add('open'));
+}
+
+function renderDetail(container, s, editing) {
   const sec = s.sections || {};
 
   const sectionHtml = (t, content) => content ? `<div class="section-block"><h3>${t}</h3><div class="section-content">${content}</div></div>` : '';
-  const listHtml = (t, items) => items?.length ? sectionHtml(t, '<ul>' + items.map(i => `<li>${esc(i)}</li>`).join('') + '</ul>') : '';
+
+  const listHtml = (title, items, key) => {
+    if (!items?.length && !editing) return '';
+    const lis = (items || []).map((item, i) => `<li>${esc(item)}${editing ? `<span class="item-delete" onclick="removeItem('${key}',${i})">x</span>` : ''}</li>`).join('');
+    const addRow = `<div class="add-item-row"><input type="text" placeholder="Add item..." onkeydown="if(event.key==='Enter')addItem('${key}',this)"><button onclick="addItem('${key}',this.previousElementSibling)">+</button></div>`;
+    return `<div class="section-block"><h3>${title}</h3><div class="section-content"><ul>${lis}</ul>${addRow}</div></div>`;
+  };
+
   const renderKeyLearnings = (kl) => {
     if (!kl) return '';
     if (typeof kl === 'string') return sectionHtml('Key Learnings', esc(kl));
@@ -612,12 +975,27 @@ async function showDetail(id) {
       '</table>');
   }
 
-  c.innerHTML = `
-    <div class="detail-panel">
+  const titleHtml = editing
+    ? `<input class="edit-input" style="font-size:24px;font-weight:700" value="${esc(s.title)}" data-field="title">`
+    : `<h2>${esc(s.title)}</h2>`;
+
+  const tagsHtml = editing
+    ? `<input class="edit-input" style="font-size:12px" value="${s.tags.join(', ')}" data-field="tags">`
+    : `<div class="tags" style="margin-bottom:16px">${s.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
+
+  const nextStepHtml = editing
+    ? `<div class="section-block"><h3>Next Step</h3><textarea class="edit-textarea" data-field="nextStep">${esc(sec.nextStep || '')}</textarea></div>`
+    : sectionHtml('Next Step', sec.nextStep ? esc(sec.nextStep) : '');
+
+  const btns = editing
+    ? `<div class="btn-group"><button class="save-btn" onclick="saveEdit('${s.id}')">SAVE</button><button class="cancel-btn" onclick="cancelEdit('${s.id}')">CANCEL</button></div>`
+    : `<div class="btn-group"><button class="edit-btn" onclick="startEdit('${s.id}')">EDIT</button><button class="delete-btn" onclick="deleteSession('${s.id}')">DELETE</button><button class="close-btn" onclick="closeDetail()">CLOSE</button></div>`;
+
+  container.innerHTML = `
+    <div class="detail-panel ${editing ? 'edit-mode' : ''}">
       <div class="detail-header">
-        <h2>${esc(s.title)}</h2>
-        <button class="delete-btn" onclick="deleteSession('${s.id}')">DELETE</button>
-        <button class="close-btn" onclick="closeDetail()">CLOSE</button>
+        ${titleHtml}
+        ${btns}
       </div>
       <div class="detail-meta">
         <span>ID: <strong>${s.id.slice(0,8)}</strong></span>
@@ -625,15 +1003,15 @@ async function showDetail(id) {
         <span>CREATED: <strong>${s.createdAt.slice(0,10)}</strong></span>
         <span>UPDATED: <strong>${s.updatedAt.slice(0,10)}</strong></span>
       </div>
-      <div class="tags" style="margin-bottom:16px">${s.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+      ${tagsHtml}
       ${sec.whatWeAreBuilding ? `<div class="detail-summary">${esc(sec.whatWeAreBuilding)}</div>` : (s.summary ? `<div class="detail-summary">${esc(s.summary)}</div>` : '')}
-      ${listHtml('What Worked', sec.whatWorked)}
-      ${listHtml('What Did Not Work', sec.whatDidNotWork)}
-      ${listHtml('Not Tried Yet', sec.whatNotTriedYet)}
+      ${listHtml('What Worked', sec.whatWorked, 'whatWorked')}
+      ${listHtml('What Did Not Work', sec.whatDidNotWork, 'whatDidNotWork')}
+      ${listHtml('Not Tried Yet', sec.whatNotTriedYet, 'whatNotTriedYet')}
       ${fileHtml}
-      ${listHtml('Decisions', sec.decisions)}
-      ${listHtml('Blockers', sec.blockers)}
-      ${sectionHtml('Next Step', sec.nextStep ? esc(sec.nextStep) : '')}
+      ${listHtml('Decisions', sec.decisions, 'decisions')}
+      ${listHtml('Blockers', sec.blockers, 'blockers')}
+      ${nextStepHtml}
       ${renderKeyLearnings(sec.keyLearnings)}
     </div>
   `;
@@ -641,6 +1019,66 @@ async function showDetail(id) {
 
 function closeDetail() {
   document.querySelectorAll('.detail-container').forEach(el => el.remove());
+  editState = null;
+}
+
+// ── Edit ──
+
+async function startEdit(id) {
+  const res = await fetch(`${API}/api/sessions/${id}`);
+  const data = await res.json();
+  editState = { id, session: JSON.parse(JSON.stringify(data.session)) };
+  const container = document.querySelector('.detail-container');
+  if (container) renderDetail(container, editState.session, true);
+}
+
+function cancelEdit(id) {
+  editState = null;
+  showDetail(id);
+}
+
+function removeItem(key, index) {
+  if (!editState) return;
+  const items = editState.session.sections[key];
+  if (items) {
+    items.splice(index, 1);
+    const container = document.querySelector('.detail-container');
+    if (container) renderDetail(container, editState.session, true);
+  }
+}
+
+function addItem(key, input) {
+  if (!editState || !input.value.trim()) return;
+  if (!editState.session.sections[key]) editState.session.sections[key] = [];
+  editState.session.sections[key].push(input.value.trim());
+  input.value = '';
+  const container = document.querySelector('.detail-container');
+  if (container) renderDetail(container, editState.session, true);
+}
+
+async function saveEdit(id) {
+  if (!editState) return;
+  const panel = document.querySelector('.detail-panel');
+  const titleInput = panel.querySelector('[data-field="title"]');
+  const tagsInput = panel.querySelector('[data-field="tags"]');
+  const nextStepInput = panel.querySelector('[data-field="nextStep"]');
+
+  const patch = {};
+  if (titleInput) patch.title = titleInput.value.trim();
+  if (tagsInput) patch.tags = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+  patch.sections = { ...editState.session.sections };
+  if (nextStepInput) patch.sections.nextStep = nextStepInput.value.trim();
+
+  await fetch(`${API}/api/sessions/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch),
+  });
+
+  editState = null;
+  closeDetail();
+  await loadSessions();
+  showDetail(id);
 }
 
 async function deleteSession(id) {
@@ -649,6 +1087,8 @@ async function deleteSession(id) {
   closeDetail();
   loadSessions();
 }
+
+// ── Search ──
 
 async function doSearch() {
   const q = document.getElementById('search-input').value.trim();
@@ -672,6 +1112,95 @@ async function doSearch() {
     </div>
   `).join('');
 }
+
+// ── Digest ──
+
+async function loadDigest() {
+  const c = document.getElementById('digest-content');
+  c.innerHTML = '<div class="loading">LOADING DIGEST...</div>';
+
+  const res = await fetch(`${API}/api/digest`);
+  const data = await res.json();
+
+  if (!data.digest) {
+    c.innerHTML = '<div class="empty">No digest found. Run: sessions digest generate &lt;project-name&gt;</div>';
+    return;
+  }
+
+  const d = data.digest;
+  const maxFreq = d.hardLessons.length ? Math.max(...d.hardLessons.map(l => l.frequency)) : 1;
+
+  const decisionsHtml = d.decisions.map(dec => {
+    const cls = dec.status !== 'active' ? dec.status : '';
+    return `<div class="decision-item ${cls}"><span>${esc(dec.decision)}</span><span class="decision-date">${dec.date}</span></div>`;
+  }).join('');
+
+  const lessonsHtml = d.hardLessons.slice(0, 20).map(l => {
+    const width = Math.max(10, (l.frequency / maxFreq) * 100);
+    return `<div class="lesson-item"><div class="lesson-bar" style="width:${width}%"></div><div class="lesson-text"><span class="lesson-freq">${l.frequency}x</span>${esc(l.lesson)}</div></div>`;
+  }).join('');
+
+  const timelineHtml = d.architecture.evolution.slice(-10).reverse().map(e =>
+    `<div class="timeline-item"><div class="timeline-date">${e.date} / ${e.sessionId}</div>${esc(e.description)}</div>`
+  ).join('');
+
+  const learningsHtml = d.keyLearnings.map(kl =>
+    `<div class="kl-category">
+      <h4 class="collapsible-header" onclick="toggleCollapse(this)">${esc(kl.category)} (${kl.items.length})</h4>
+      <div class="collapsible-body"><ul>${kl.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>
+    </div>`
+  ).join('');
+
+  c.innerHTML = `
+    <div class="digest-header">
+      <h2>${esc(d.projectName)}</h2>
+      <div class="digest-meta">
+        <span>PATH: <strong>${esc(d.projectPath)}</strong></span>
+        <span>UPDATED: <strong>${d.lastUpdated.slice(0,10)}</strong></span>
+        <span>SESSIONS: <strong>${d.sessionCount}</strong></span>
+      </div>
+    </div>
+
+    ${d.architecture.current ? `
+    <div class="digest-section">
+      <h3>Architecture</h3>
+      <div style="font-size:14px;line-height:1.7;margin-bottom:20px">${esc(d.architecture.current)}</div>
+      ${timelineHtml ? `<h3>Evolution</h3><div class="timeline">${timelineHtml}</div>` : ''}
+    </div>` : ''}
+
+    ${decisionsHtml ? `
+    <div class="digest-section">
+      <h3>Decisions (${d.decisions.length})</h3>
+      ${decisionsHtml}
+    </div>` : ''}
+
+    ${lessonsHtml ? `
+    <div class="digest-section">
+      <h3>Hard Lessons (${d.hardLessons.length})</h3>
+      ${lessonsHtml}
+    </div>` : ''}
+
+    ${learningsHtml ? `
+    <div class="digest-section">
+      <h3>Key Learnings</h3>
+      ${learningsHtml}
+    </div>` : ''}
+
+    ${d.nextSteps.length ? `
+    <div class="digest-section">
+      <h3>Next Steps</h3>
+      <ul class="section-content">${d.nextSteps.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+    </div>` : ''}
+  `;
+}
+
+function toggleCollapse(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+
+// ── Helpers ──
 
 function highlight(text, query) {
   if (!query) return text;
