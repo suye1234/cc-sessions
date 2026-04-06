@@ -1,5 +1,10 @@
 ---
-description: Delete one or more sessions from the sessions project. Supports ID prefix matching with confirmation.
+name: session-delete
+description: Delete one or more sessions with confirmation. Supports ID prefix matching. WHEN "delete session", "remove session", "clean up sessions".
+compatibility: Requires Node.js 18+ and npx/tsx. Set $SESSIONS_HOME to the sessions project directory.
+metadata:
+  author: suye1234
+  version: "0.1.0"
 ---
 
 # Delete Session
@@ -10,7 +15,7 @@ Delete sessions from `$SESSIONS_HOME/data/`.
 
 ### Step 1: Identify target session(s)
 
-If $ARGUMENTS is provided:
+If session IDs are provided:
 - Treat as one or more session ID prefixes (comma-separated for multiple)
 - Resolve each to the full UUID via CLI
 

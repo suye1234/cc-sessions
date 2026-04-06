@@ -2,7 +2,9 @@
 
 [中文文档](./README.zh-CN.md)
 
-A TypeScript CLI tool and library for managing Claude Code conversation sessions. Structured JSON storage, full-text search, import from existing session data, and a Neo-Brutalism web dashboard.
+A TypeScript CLI tool and library for managing AI coding agent conversation sessions. Structured JSON storage, full-text search, import from existing session data, and a Neo-Brutalism web dashboard.
+
+**Works with**: Claude Code, Windsurf, Devin, OpenAI Codex, GitHub Copilot, Cursor, and any tool supporting the [Agent Skills](https://agentskills.io) standard.
 
 **Zero runtime dependencies** — uses only Node.js built-in modules.
 
@@ -93,23 +95,27 @@ Sessions use **structured sections** rather than raw conversation messages:
 | `SESSIONS_DATA_DIR` | `./data` | Data directory path |
 | `PORT` | `8283` | Dashboard server port |
 
-## Claude Code Commands
+## Agent Skills (Cross-Tool)
 
-This project includes custom `/yesu-session:*` commands for Claude Code:
+This project provides skills compatible with the [Agent Skills](https://agentskills.io) standard, working across Claude Code, Windsurf, Devin, Codex, Copilot, and Cursor.
 
-| Command | Description |
-|---------|-------------|
-| `/yesu-session:capture` | Save current conversation as a structured session |
-| `/yesu-session:update` | Append new progress to an existing session |
-| `/yesu-session:resume` | Load a session and restore context |
-| `/yesu-session:list` | List all sessions |
-| `/yesu-session:search` | Full-text search across sessions |
+| Skill | Description |
+|-------|-------------|
+| `session-capture` | Save current conversation as a structured session |
+| `session-update` | Append new progress to an existing session |
+| `session-resume` | Load a session and restore context |
+| `session-list` | List all sessions |
+| `session-search` | Full-text search across sessions |
+| `session-delete` | Delete sessions |
+| `session-digest` | Generate/show/update project knowledge digest |
 
-Install commands (symlinks to `~/.claude/commands/`):
+Install skills:
 
 ```bash
 ./install.sh
 ```
+
+This symlinks `skills/` to `~/.claude/skills/` for Claude Code. For other tools, copy or symlink the `skills/` directory to your tool's skills path (e.g., `.agents/skills/` or `.windsurf/skills/`).
 
 ## Development
 

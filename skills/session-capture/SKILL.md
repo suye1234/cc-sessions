@@ -1,5 +1,10 @@
 ---
-description: Save the current conversation as a structured session summary (aligned with /save-session format) to the sessions project for dashboard viewing.
+name: session-capture
+description: Save the current conversation as a structured session summary to the sessions project. WHEN "save session", "capture session", "record session", "save conversation", "save progress".
+compatibility: Requires Node.js 18+ and npx/tsx. Set $SESSIONS_HOME to the sessions project directory.
+metadata:
+  author: suye1234
+  version: "0.1.0"
 ---
 
 # Capture Session
@@ -12,7 +17,7 @@ Capture the current conversation into the sessions project at `$SESSIONS_HOME/` 
 
 Review the current conversation and fill in these sections (skip empty ones):
 
-1. **title**: One-line topic summary (e.g., "创建 sessions 项目 — 会话管理工具")
+1. **title**: One-line topic summary (e.g., "Build auth module for API server")
 2. **topic**: Same as title or slightly more detailed
 3. **project**: Working directory path
 4. **tags**: Lowercase keywords (e.g., `typescript,sessions,dashboard`)
@@ -25,8 +30,8 @@ Review the current conversation and fill in these sections (skip empty ones):
 11. **keyLearnings**: Notable insights, organized by category. Use `Record<string, string[]>` format:
     ```json
     {
-      "分类名称": ["insight 1", "insight 2"],
-      "另一个分类": ["insight 3"]
+      "Category Name": ["insight 1", "insight 2"],
+      "Another Category": ["insight 3"]
     }
     ```
 
@@ -74,7 +79,6 @@ npx tsx src/cli.ts digest update "<PROJECT_NAME>" --session-id "<SESSION_ID>"
 
 **Skip digest update when:**
 - No `project:<name>` tag — the session is general learning, exploration, or discussion
-- The `project:<name>` tag should be added during capture when the session is about building/modifying a specific project
 
 ### Step 4: Confirm with user
 
@@ -91,10 +95,10 @@ View in dashboard: cd $SESSIONS_HOME && npm run dashboard
 
 ## Key Principle
 
-Think like `/save-session` — capture the **what, why, outcomes, and next steps**, not individual messages. A future session should be able to pick up where this one left off by reading the sections.
+Capture the **what, why, outcomes, and next steps**, not individual messages. A future session should be able to pick up where this one left off by reading the sections.
 
 ## Notes
 
-- This saves to `sessions/data/` (JSON), viewed via dashboard at localhost:8283
-- Use Chinese in title and summary when the conversation was in Chinese
+- This saves to `$SESSIONS_HOME/data/` (JSON), viewed via dashboard at localhost:8283
+- Use the conversation's language for title and summary
 - Tags should be lowercase for consistency

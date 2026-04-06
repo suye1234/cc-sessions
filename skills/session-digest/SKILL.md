@@ -1,5 +1,10 @@
 ---
-description: Generate, show, or update the Project Digest for a project. Aggregates cross-session knowledge into a project-level document at <project>/.claude/project-digest.json.
+name: session-digest
+description: Generate, show, or update the Project Digest — aggregates cross-session knowledge into a project-level document. WHEN "project digest", "generate digest", "show digest", "update digest", "project knowledge".
+compatibility: Requires Node.js 18+ and npx/tsx. Set $SESSIONS_HOME to the sessions project directory.
+metadata:
+  author: suye1234
+  version: "0.1.0"
 ---
 
 # Project Digest
@@ -8,29 +13,28 @@ Manage the Project Digest — a synthesized knowledge document aggregated from a
 
 ## Process
 
-### Step 1: Determine action and project path
+### Step 1: Determine action and project
 
-Parse $ARGUMENTS:
-- Empty or `show` → show digest for current project (detect from working directory)
-- `generate [project-path]` → full generation from all matching sessions
-- `show [project-path]` → display existing digest
-- `update [project-path]` → incremental update with undigested sessions
+Parse the user's intent:
+- `show` (default) → display existing digest for current project
+- `generate [project-name]` → full generation from all matching sessions
+- `update [project-name]` → incremental update with undigested sessions
 
-If no project-path is provided, use the current working directory.
+If no project name is provided, detect from the current working directory.
 
 ### Step 2: Execute
 
 ```bash
 cd $SESSIONS_HOME
 
-# Generate (full rebuild from all sessions)
-npx tsx src/cli.ts digest generate "<PROJECT_PATH>"
+# Generate (full rebuild from all sessions tagged project:<name>)
+npx tsx src/cli.ts digest generate "<PROJECT_NAME>" [--path /project/path]
 
 # Show (display existing digest)
-npx tsx src/cli.ts digest show "<PROJECT_PATH>"
+npx tsx src/cli.ts digest show [/project/path]
 
 # Update (incremental, only new sessions)
-npx tsx src/cli.ts digest update "<PROJECT_PATH>"
+npx tsx src/cli.ts digest update "<PROJECT_NAME>" [--path /project/path]
 ```
 
 ### Step 3: Display results
@@ -38,7 +42,7 @@ npx tsx src/cli.ts digest update "<PROJECT_PATH>"
 For `show`, present the digest in a readable format:
 
 ```
-PROJECT DIGEST: <project-path>
+PROJECT DIGEST: <project-name>
 ════════════════════════════════════════════════
 Last updated: <date>
 Sessions: <count>
@@ -48,16 +52,13 @@ ARCHITECTURE:
 
 ACTIVE DECISIONS:
 - <decision> (<date>)
-- ...
 
 HARD LESSONS (DO NOT REPEAT):
 - [Nx] <lesson>
-- ...
 
 KEY LEARNINGS:
 ### <category>
 - <item>
-- ...
 
 NEXT STEPS:
 - <step>
@@ -67,6 +68,7 @@ NEXT STEPS:
 For `generate` or `update`, confirm:
 ```
 Digest <generated|updated>: <N> sessions aggregated
+Changes: +<N> decision(s), +<N> lesson(s), +<N> learning(s)
 Written to: <project-path>/.claude/project-digest.json
 ```
 

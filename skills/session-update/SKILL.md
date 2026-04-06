@@ -1,5 +1,10 @@
 ---
-description: Update an existing session with new progress from the current conversation. Merges new sections into the existing session rather than creating a new one.
+name: session-update
+description: Update an existing session with new progress from the current conversation. Merges new items into existing sections. WHEN "update session", "save progress", "append session", "session update".
+compatibility: Requires Node.js 18+ and npx/tsx. Set $SESSIONS_HOME to the sessions project directory.
+metadata:
+  author: suye1234
+  version: "0.1.0"
 ---
 
 # Update Session
@@ -10,7 +15,7 @@ Update an existing session in `$SESSIONS_HOME/data/` with new progress from the 
 
 ### Step 1: Identify the target session
 
-If $ARGUMENTS is provided, treat it as a session ID prefix.
+If a session ID is provided, treat it as a session ID prefix.
 
 If not provided, try to **auto-match the current conversation**:
 1. Look at the current conversation context — identify the project path, title, or topic being discussed
@@ -24,11 +29,7 @@ If not provided, try to **auto-match the current conversation**:
 
 ### Step 2: Load the current session
 
-```bash
-cd $SESSIONS_HOME
-```
-
-Read `data/sessions/<full_id>.json` directly to get the current sections.
+Read `$SESSIONS_HOME/data/sessions/<full_id>.json` directly to get the current sections.
 
 ### Step 3: Analyze what changed
 
@@ -97,16 +98,13 @@ npx tsx src/cli.ts update <id> --sections '{"nextStep":"..."}' --title "..." --t
 
 ### Step 5: Update Project Digest (conditional)
 
-**Only trigger digest update when** the session's tags include a `project:<name>` tag (e.g., `project:sessions`, `project:harness`).
+**Only trigger digest update when** the session's tags include a `project:<name>` tag.
 
 If a `project:<name>` tag is present:
 ```bash
 cd $SESSIONS_HOME
 npx tsx src/cli.ts digest update "<PROJECT_NAME>" --session-id "<SESSION_ID>"
 ```
-
-**Skip digest update when:**
-- No `project:<name>` tag — the session is general learning, exploration, or discussion
 
 ### Step 6: Confirm with user
 

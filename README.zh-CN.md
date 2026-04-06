@@ -2,7 +2,9 @@
 
 [English](./README.md)
 
-一个用于管理 Claude Code 对话会话的 TypeScript CLI 工具和库。支持结构化 JSON 存储、全文搜索、从现有 session 数据导入，以及 Neo-Brutalism 风格的 Web Dashboard。
+一个用于管理 AI 编程助手对话会话的 TypeScript CLI 工具和库。支持结构化 JSON 存储、全文搜索、从现有 session 数据导入，以及 Neo-Brutalism 风格的 Web Dashboard。
+
+**支持工具**：Claude Code、Windsurf、Devin、OpenAI Codex、GitHub Copilot、Cursor，以及所有支持 [Agent Skills](https://agentskills.io) 标准的工具。
 
 **零运行时依赖** — 仅使用 Node.js 内置模块。
 
@@ -93,23 +95,27 @@ Session 以**结构化 sections** 为核心，而非原始对话消息：
 | `SESSIONS_DATA_DIR` | `./data` | 数据目录路径 |
 | `PORT` | `8283` | Dashboard 服务端口 |
 
-## Claude Code 命令
+## Agent Skills（跨工具）
 
-项目包含自定义的 `/yesu-session:*` 命令，用于 Claude Code：
+项目提供符合 [Agent Skills](https://agentskills.io) 标准的 skills，可在 Claude Code、Windsurf、Devin、Codex、Copilot 和 Cursor 中使用。
 
-| 命令 | 说明 |
-|------|------|
-| `/yesu-session:capture` | 将当前对话保存为结构化会话 |
-| `/yesu-session:update` | 向已有会话追加新进展 |
-| `/yesu-session:resume` | 加载会话并恢复上下文 |
-| `/yesu-session:list` | 列出所有会话 |
-| `/yesu-session:search` | 跨会话全文搜索 |
+| Skill | 说明 |
+|-------|------|
+| `session-capture` | 将当前对话保存为结构化会话 |
+| `session-update` | 向已有会话追加新进展 |
+| `session-resume` | 加载会话并恢复上下文 |
+| `session-list` | 列出所有会话 |
+| `session-search` | 跨会话全文搜索 |
+| `session-delete` | 删除会话 |
+| `session-digest` | 生成/查看/更新项目知识摘要 |
 
-安装命令（软链接到 `~/.claude/commands/`）：
+安装 skills：
 
 ```bash
 ./install.sh
 ```
+
+此脚本会将 `skills/` 软链接到 `~/.claude/skills/`（Claude Code）。其他工具请将 `skills/` 目录复制或软链接到对应路径（如 `.agents/skills/` 或 `.windsurf/skills/`）。
 
 ## 开发
 
