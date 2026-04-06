@@ -109,13 +109,37 @@ Session 以**结构化 sections** 为核心，而非原始对话消息：
 | `session-delete` | 删除会话 |
 | `session-digest` | 生成/查看/更新项目知识摘要 |
 
-安装 skills：
+### 安装 Skills
 
 ```bash
+# 默认：Claude Code + 跨工具标准路径（~/.agents/skills/）
 ./install.sh
+
+# 安装到指定工具
+./install.sh --windsurf
+./install.sh --codex
+./install.sh --copilot
+./install.sh --cline
+
+# 一次安装到所有支持的工具
+./install.sh --all
+
+# 组合多个目标
+./install.sh --windsurf --codex --claude
+
+# 移除所有已安装的 skills
+./install.sh --uninstall
 ```
 
-此脚本会将 `skills/` 软链接到 `~/.claude/skills/`（Claude Code）。其他工具请将 `skills/` 目录复制或软链接到对应路径（如 `.agents/skills/` 或 `.windsurf/skills/`）。
+| 工具 | 参数 | 安装路径 |
+|------|------|---------|
+| Claude Code | `--claude` | `~/.claude/skills/` |
+| Windsurf | `--windsurf` | `~/.codeium/windsurf/skills/` |
+| OpenAI Codex | `--codex` | `~/.codex/skills/` |
+| GitHub Copilot | `--copilot` | `~/.copilot/skills/` |
+| Cline | `--cline` | `~/.cline/skills/` |
+| Cursor / Devin | `--agents` | `~/.agents/skills/` |
+| 跨工具通用 | `--agents` | `~/.agents/skills/` |
 
 ## 开发
 

@@ -109,13 +109,37 @@ This project provides skills compatible with the [Agent Skills](https://agentski
 | `session-delete` | Delete sessions |
 | `session-digest` | Generate/show/update project knowledge digest |
 
-Install skills:
+### Install Skills
 
 ```bash
+# Default: Claude Code + cross-tool standard path (~/.agents/skills/)
 ./install.sh
+
+# Install to a specific tool
+./install.sh --windsurf
+./install.sh --codex
+./install.sh --copilot
+./install.sh --cline
+
+# Install to all supported tools at once
+./install.sh --all
+
+# Combine multiple targets
+./install.sh --windsurf --codex --claude
+
+# Remove all installed skills
+./install.sh --uninstall
 ```
 
-This symlinks `skills/` to `~/.claude/skills/` for Claude Code. For other tools, copy or symlink the `skills/` directory to your tool's skills path (e.g., `.agents/skills/` or `.windsurf/skills/`).
+| Tool | Flag | Install Path |
+|------|------|-------------|
+| Claude Code | `--claude` | `~/.claude/skills/` |
+| Windsurf | `--windsurf` | `~/.codeium/windsurf/skills/` |
+| OpenAI Codex | `--codex` | `~/.codex/skills/` |
+| GitHub Copilot | `--copilot` | `~/.copilot/skills/` |
+| Cline | `--cline` | `~/.cline/skills/` |
+| Cursor / Devin | `--agents` | `~/.agents/skills/` |
+| Cross-tool | `--agents` | `~/.agents/skills/` |
 
 ## Development
 
