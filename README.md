@@ -92,7 +92,8 @@ Sessions use **structured sections** rather than raw conversation messages:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SESSIONS_DATA_DIR` | `./data` | Data directory path |
+| `SESSIONS_HOME` | *(set by install.sh)* | Project root directory. Used by skills to locate the project (`cd $SESSIONS_HOME`). **This is the only variable you need to set.** |
+| `SESSIONS_DATA_DIR` | `./data` | Override data directory path (optional, only needed if storing data outside the project) |
 | `PORT` | `8283` | Dashboard server port |
 
 ## Agent Skills (Cross-Tool)

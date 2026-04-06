@@ -92,7 +92,8 @@ Session 以**结构化 sections** 为核心，而非原始对话消息：
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `SESSIONS_DATA_DIR` | `./data` | 数据目录路径 |
+| `SESSIONS_HOME` | *(install.sh 自动设置)* | 项目根目录。Skills 通过 `cd $SESSIONS_HOME` 定位项目。**唯一需要设置的变量。** |
+| `SESSIONS_DATA_DIR` | `./data` | 覆盖数据目录路径（可选，仅在数据存放于项目外部时需要） |
 | `PORT` | `8283` | Dashboard 服务端口 |
 
 ## Agent Skills（跨工具）
